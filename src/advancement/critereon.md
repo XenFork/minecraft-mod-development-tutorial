@@ -151,3 +151,58 @@ public class Tutorial {
     }
 }
 ```
+
+## Fabric
+在主类中实现
+
+```java
+
+import net.fabricmc.api.ModInitializer;
+
+public class Tutorial implements ModInitializer {
+    public static final CraftingRecipeTrigger cr = new CraftingRecipeTrigger();
+
+    @Override
+    public void onInitialize() {
+        
+    }
+}
+```
+
+```java
+import net.minecraft.world.inventory.ResultSlot;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+
+@Mixin(ResultSlot.class)
+public class MixinCraftingRecipe {
+    @Inject(
+            method = "checkTakeAchievements",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/item/ItemStack;onCraftedBy(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;I)V",
+                    shift = At.Shift.AFTER)
+    )
+    private void craft(ItemStack itemStack, CallbackInfo ci) {
+        Tutorial.cr.trigger(serverPlayer, itemStack);
+    }
+    
+}
+```
+
+## Architectury
+多加载器模式触发的事件
+
+```java
+import dev.architectury.event.events.common.PlayerEvent;
+
+public class Tutorial {
+    public static final CraftingRecipeTrigger cr = new CraftingRecipeTrigger();
+
+    public static void init() {
+        PlayerEvent.CRAFT_ITEM.register((player, constructed, inventory) -> {
+            cr.trigger(serverPlayer, constructed);
+        });
+    }
+}
+```
