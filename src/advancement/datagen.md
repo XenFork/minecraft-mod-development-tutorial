@@ -4,6 +4,7 @@
 
 ## Mojang
 这个是mojang的原生Advancement DataGen代码
+
 ```java
 
 package net.minecraft.data.advancements;
@@ -105,7 +106,8 @@ public class TutorialProvider extends AdvancementProvider {
 
     private static void register(Consumer<Advancement> advancementConsumer) {
         Advancement.Builder.advancement()
-                .addCriterion(new CraftingRecipeTrigger.TriggerInstance(EntityPredicate.Composite.ANY, ItemPredicate.Builder.item().of(Items.STICK)));
+                .addCriterion("a", new CraftingRecipeTrigger.TriggerInstance(EntityPredicate.Composite.ANY, ItemPredicate.Builder.item().of(Items.STICK)))
+                .save(consumer, new ResourceLocation("tutorial", "main/root"));
     }
 
     @Override
@@ -124,7 +126,30 @@ public class TutorialProvider extends AdvancementProvider {
 ## Fabric
 
 ```java
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 
+import java.util.function.Consumer;
+
+public class TutorialProvider extends FabricAdvancementProvider {
+    public TutorialProvider(FabricDataGenerator generator) {
+        super(generator);
+    }
+
+    @Override
+    public void generateAdvancement(Consumer<Advancement> consumer) {
+        Advancement.Builder.advancement()
+                .addCriterion("a", new CraftingRecipeTrigger.TriggerInstance(EntityPredicate.Composite.ANY, ItemPredicate.Builder.item().of(Items.STICK)))
+                .save(consumer, new ResourceLocation("tutorial", "main/root"));
+    }
+}
 ```
 
 ## Architectury
+1. 写一个forge的dataGen
+2. 分别在fabric forge模块下设定特有的dataen操作
