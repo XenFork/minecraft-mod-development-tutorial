@@ -4,3 +4,4 @@
 * [进度(Advancement)](advancement.md)
   * [进度触发器](advancement/critereon.md)
   * [数据生成](advancement/datagen.md)
+  * [进度藏在代码中](advancement/dic.md)
